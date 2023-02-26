@@ -1,0 +1,140 @@
+
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8" />
+    <title>catch</title>
+    <meta name="cool catch" content="catching game very original">
+    <style>
+        #catchWindow {
+            width: 640px;
+            height: 480px;
+            position: relative;
+            background: lightblue;
+            /* background-image: url("https://cdn.discordapp.com/attachments/748382935819878440/1075627439834791997/image0.jpg");
+            background-position: 0px;
+            background-size: 640px;  */
+        }
+
+        #playerBox {
+            width: 50px;
+            height: 50px;
+            position: absolute;
+            background: black;
+        }
+
+        #apple {
+            background: red;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            position:absolute;
+        }
+    </style>
+    <script>
+        function drawCatch2() {
+            //canvas dimensions: 640x480p
+            const canvasWidth = 640;
+            const canvasHeight = 480;
+            const playerWidth = 50;
+            const appleWidth = 30;
+
+            const player = document.getElementById("playerBox");
+            const apple = document.getElementById("apple");
+
+            let score = 0;
+            let remainingApples = 20;
+
+            //coordinates are measured from top-left
+            let xPlayer = 290;
+            let xApple = randomNumber(0, 590);
+            let yApple = 0;
+
+            //handle user input
+            let keysPressed = {};
+            document.addEventListener('keydown', (event) => {
+                let movementScale = 1;
+
+                keysPressed[event.key] = true;
+
+                if (keysPressed["Shift"]) movementScale = 8;
+
+                if (keysPressed["ArrowRight"]) {
+                    xPlayer += 20 * movementScale;
+                }
+                else if (keysPressed["ArrowLeft"]) {
+                    xPlayer -= 20 * movementScale;
+                }
+            });
+            document.addEventListener('keyup', (event) => {
+                delete keysPressed[event.key];
+            });
+
+            function frame() {
+
+                //in case player goes out of bounds
+                if (xPlayer <= 0) {
+                    xPlayer = 0;
+                } 
+                else if (xPlayer >= canvasWidth - playerWidth) {
+                    xPlayer = canvasWidth - playerWidth;
+                }
+                
+                //initial draw things
+                document.getElementById("score").innerHTML = "Score: " + score;
+                document.getElementById("applesRemaining").innerHTML = "Remaining: " + remainingApples;
+                player.style.background = "black";
+                player.style.bottom = "0px";
+                player.style.left = xPlayer + "px";
+                apple.style.top = yApple + "px";
+                apple.style.left = xApple + "px";
+
+                //make apples fall
+                if (yApple >= canvasHeight - appleWidth) {
+
+                    //detects collisions and adds to score (as long as player touches the apple)
+                    if (xPlayer <= xApple + appleWidth && xApple <= xPlayer + playerWidth) {
+                        score++;
+                        player.style.background = "yellow";
+                    }
+
+                    xApple = randomNumber(0, canvasWidth - playerWidth);
+                    yApple = 0;
+                    remainingApples--;
+                }
+                else {
+                    yApple += 5;
+                }
+
+                if (remainingApples < 0) return; // stop the game when there are no more apples
+
+                requestAnimationFrame(frame);
+            }
+            requestAnimationFrame(frame); //calls requestAnimationFrame once in draw() and then recusively calls is it frame()
+        }
+
+        function randomNumber(min, max) { //inclusive float
+            return Math.random() * (max - min) + min;
+        }
+    </script>
+  </head>
+
+<body> 
+    such game wow
+    <p id="score"></p>
+
+    <div id="catchWindow">
+        <div id ="apple"></div>
+        <div id="playerBox"></div>
+    </div>
+
+    <p id="applesRemaining"></p>
+
+    <script>
+        drawCatch2();
+    </script>
+    controls: left and right arrow keys, shift to go faster
+
+</body>
+
+</html>
